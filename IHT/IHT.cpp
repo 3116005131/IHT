@@ -5,19 +5,60 @@
 #include <iostream>
 #include <stdio.h>
 #include <string.h>
-
 struct Student
 {
-	char id[20];
-	char age[10];
-	char region[20];
-	char class_num[10];
-	char health[20];
+	char id[20];//标识符：学号
+	char age[10];//准标识符：年龄
+	char region[20];//准标识符：地区
+	char class_num[10];//准标识符：班级
+	char health[20];//敏感信息：健康状况
+	//不知道为什么重载==后语法没有报错 但是读取this.准表示符报错ctrl+k+c,ctrl+k+u//知道原因了是循环条件写错了写了flag=1
+	bool operator==(const Student& rhs)//操作运算符重载：==表示Student中的准标识符相等
+	{
+		return (strcmp(age, rhs.age) == 0) && (strcmp(region, rhs.region) == 0) && (strcmp(class_num, rhs.class_num) == 0);
+	}
 }data[12] = { "8116005131","27","guangzhou","14248","HIV","8116005132","28","qingyuan","14207","HIV","8116005133","26","guangzhou","14246","cancer","8116005134","25","qingyuan","14249","cancer","8116005135","41","jinan","13053","hepatitis","8116005136","48","qingdao","13074","phthisis","8116005137","45","yantai","13064","asthma","8116005138","42","yantai","13062","heart_disease","8116005139","33","guangzhou","14242","flu","3116005110","37","qingyuan","14204","flu","8116005111","36","qingyuan","14205","flu","8116005112","35","guangzhou","14248","indigestion" };
 //guangdong-guangzhou/qingyuan shandong-jinan/qingdao/yantai
-int check(Student data[12])
+//bool structcmp(Student data1,Student data2) 
+//{
+//	if ((strcmp(data1.age, data2.age) == 0) && (strcmp(data1.region, data2.region) == 0) && (strcmp(data1.class_num, data2.class_num) == 0))return true;
+//	else
+//	{
+//		return false;
+//	}
+//}
+void printdata() //输出数据
 {
-	return 0;
+	printf("     学号             年龄             籍贯           班级            健康状况     \n");
+	for (int i = 0; i < 12; i++)
+	{
+		printf("     %10s%10s%20s   %10s   %20s\n", data[i].id, data[i].age, data[i].region, data[i].class_num, data[i].health);
+	}
+}
+bool check(Student data[12],int k)
+{
+	int flag = 1;//flag标志第i条数据是否满足k匿名检测，1表示真：满足，0表示假：不满足
+	for (int i = 0; i < 12&&flag==1; i++)
+	{
+		for (int t = 0,j=1; t < 12; t++)
+		{
+			if (t==i)
+			{
+				continue;
+			}
+			if (data[i]==data[t])
+			{
+				j++;
+			}
+			if (j==k)
+			{
+				flag = 1;
+				break;
+			}
+			flag = 0;
+		}
+	}
+	return flag;
 }
 int datafly(Student data[12],int k)
 {
@@ -122,67 +163,116 @@ int datafly(Student data[12],int k)
 	switch (max)
 	{
 	case 0:
-		printf("对应的最大表示符为：age");
-		for (int i = 0; i < 12; i++)
+		printf("对应的最大表示符为：age\n");
+		if ((strcmp(data[0].age, "<30") != 0) || (strcmp(data[0].age, ">40") != 0) || (strcmp(data[0].age, "3*") != 0))
 		{
-			if (strcmp(data[i].age, "30")<0)
+			for (int i = 0; i < 12; i++)
 			{
-				strcpy_s(data[i].age,10, "<30");
+				if (strcmp(data[i].age, "30") < 0)
+				{
+					strcpy_s(data[i].age, 10, "<30");
+				}
+				else if (strcmp(data[i].age, "40") > 0)
+				{
+					strcpy_s(data[i].age, 10, ">40");
+				}
+				else
+				{
+					strcpy_s(data[i].age, 10, "3*");
+				}
 			}
-			else if (strcmp(data[i].age, "40") > 0)
+		}
+		else
+		{
+			for (int i = 0; i < 12; i++)
 			{
-				strcpy_s(data[i].age, 10, ">40");
-			}
-			else
-			{
-				strcpy_s(data[i].age, 10, "3*");
+				strcpy_s(data[i].age, 10, "*");
 			}
 		}
 		break;
 	case 1:
-		printf("对应的最大表示符为：region");
-		for (int i = 0; i < 12; i++)
+		printf("对应的最大表示符为：region\n");
+		if ((strcmp(data[0].region, "guangdong") != 0) || (strcmp(data[0].class_num, "shandong") != 0) || (strcmp(data[0].class_num, "other") != 0))
 		{
-			if ((strcmp(data[i].region, "guangzhou") == 0)|| (strcmp(data[i].region, "qingyuan") == 0))
+			for (int i = 0; i < 12; i++)
 			{
-				strcpy_s(data[i].region, 20, "guangdong");
+				if ((strcmp(data[i].region, "guangzhou") == 0) || (strcmp(data[i].region, "qingyuan") == 0))
+				{
+					strcpy_s(data[i].region, 20, "guangdong");
+				}
+				else if ((strcmp(data[i].region, "jinan") == 0) || (strcmp(data[i].region, "yantai") == 0) || (strcmp(data[i].region, "qingdao") == 0))
+				{
+					strcpy_s(data[i].region, 20, "shandong");
+				}
+				else
+				{
+					strcpy_s(data[i].region, 20, "other");
+				}
 			}
-			else if ((strcmp(data[i].region, "jinan") == 0) || (strcmp(data[i].region, "yantai") == 0)|| (strcmp(data[i].region, "qingdao") == 0))
+		}
+		else
+		{
+			for (int i = 0; i < 12; i++)
 			{
-				strcpy_s(data[i].region, 20, "shandong");
-			}
-			else
-			{
-				strcpy_s(data[i].region, 20, "other");
+					strcpy_s(data[i].region, 20, "*");
 			}
 		}
 		break;
 	case 2:
-		printf("对应的最大表示符为：class_num");
-		for (int i = 0; i < 12; i++)
+		printf("对应的最大表示符为：class_num\n");
+		if (data[0].class_num[4]!='*')//第一次泛化class_num
 		{
-			if ((strcmp(data[i].class_num, "14250") < 0)|| (strcmp(data[i].class_num, "14240") > 0))
+			for (int i = 0; i < 12; i++)
 			{
-				strcpy_s(data[i].class_num, 10, "1424*");
+				data[i].class_num[4] = '*';
+					/*if ((strcmp(data[i].class_num, "14250") < 0) && (strcmp(data[i].class_num, "14240") > 0))
+					{
+						strcpy_s(data[i].class_num, 10, "1424*");
+					}
+					else if ((strcmp(data[i].class_num, "14210") < 0) && (strcmp(data[i].class_num, "14200") > 0))
+					{
+						strcpy_s(data[i].class_num, 10, "1420*");
+					}
+					else if ((strcmp(data[i].class_num, "13060") < 0) && (strcmp(data[i].class_num, "13050") > 0))
+					{
+						strcpy_s(data[i].class_num, 10, "1305*");
+					}
+					else if ((strcmp(data[i].class_num, "13070") < 0) && (strcmp(data[i].class_num, "13060") > 0))
+					{
+						strcpy_s(data[i].class_num, 10, "1306*");
+					}
+					else if ((strcmp(data[i].class_num, "13080") < 0) && (strcmp(data[i].class_num, "13070") > 0))
+					{
+						strcpy_s(data[i].class_num, 10, "1307*");
+					}
+					else
+					{
+						strcpy_s(data[i].class_num, 10, "*");
+					}*/
 			}
-			else if ((strcmp(data[i].class_num, "14210") < 0) || (strcmp(data[i].class_num, "14200") > 0))
+		}
+		else if (data[0].class_num[4]=='*'/*(strcmp(data[0].class_num, "0000*") > 0) && (strcmp(data[0].class_num, "9999*") < 0) */)//第二次泛化class_num
+		{
+			for (int i = 0; i < 12; i++)
 			{
-				strcpy_s(data[i].class_num, 10, "14200*");
+				data[i].class_num[3] = '*';
+				/*if ((strcmp(data[i].class_num, "1424*") == 0) || (strcmp(data[0].class_num, "1420*") == 0))
+				{
+					strcpy_s(data[i].class_num, 10, "142**");
+				}
+				else if ((strcmp(data[i].class_num, "1305*") == 0) || (strcmp(data[i].class_num, "1306*") == 0) || (strcmp(data[i].class_num, "1307*") > 0))
+				{
+					strcpy_s(data[i].class_num, 10, "130**");
+				}
+				else
+				{
+					strcpy_s(data[i].class_num, 10, "*");
+				}*/
 			}
-			else if((strcmp(data[i].class_num, "13060") < 0) || (strcmp(data[i].class_num, "13050") > 0))
-			{
-				strcpy_s(data[i].class_num, 10, "1306*");
-			}
-			else if ((strcmp(data[i].class_num, "13070") < 0) || (strcmp(data[i].class_num, "13060") > 0))
-			{
-				strcpy_s(data[i].class_num, 10, "1307*");
-			}
-			else if ((strcmp(data[i].class_num, "13080") < 0) || (strcmp(data[i].class_num, "13080") > 0))
-			{
-				strcpy_s(data[i].class_num, 10, "1307*");
-			}
-			else
-			{
+		}
+		else if(data[0].class_num[3] == '*')//最后一次泛化 
+		{
+			for (int i = 0; i < 12; i++) {
 				strcpy_s(data[i].class_num, 10, "*");
 			}
 		}
@@ -195,9 +285,7 @@ int datafly(Student data[12],int k)
 	}
 
 
-	//泛化后的表格进行k匿名检测。
-	check(data);
-	//如果泛化后的数据表符合k匿名检测，则输出，如果不符合，goto1。
+
 	return 0;
 }
 
@@ -207,7 +295,7 @@ int main()
 	char user[17];
 	char pwd[21];
 	int count = 0;
-	/*
+	
 	do
 	{
 		if (count > 0)
@@ -219,12 +307,25 @@ int main()
 		count++;
 
 	} while ((strcmp(user, USER)) || (strcmp(pwd, PWD)));
-	*/
+	
 	puts("Successful user login!");
 	int k = 0;
 	printf("进行k-匿名化，k取：");
 	scanf_s("%d", &k);
-	datafly(data,k);
+	printf("-----------------------------------------原始数据--------------------------------------------------\n");
+	printdata();
+	printf("---------------------------------------------------------------------------------------------------\n");
+	while (check(data,k)==0)//泛化后的表格进行k匿名检测。
+	{
+		datafly(data,k);//如果泛化后的数据表符合k匿名检测，则输出，如果不符合，goto1。
+		printf("因此再进行一级泛化\n\n");
+	}
+	printf("---------------------------------datafly算法匿名化后数据--------------------------------------------\n");
+	printdata();
+	printf("---------------------------------------------------------------------------------------------------\n");
+
+	//bool answer=check(data,k);
+	//printf("check的结果：%d\n",answer);
 	return 0;
     //std::cout << "Hello World!\n"; 
 }
